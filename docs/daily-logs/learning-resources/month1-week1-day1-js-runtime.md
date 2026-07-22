@@ -7,7 +7,7 @@
 
 **必看（建立心智模型）**
 - [MDN — JavaScript execution model](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Execution_model)：官方參考文件，說明 engine 與 host environment 如何協作執行程式碼，並用具體的 call frame 例子示範 call stack 運作，比詞彙表定義更完整（原先連結的 `/Glossary/Execution_context` 頁面已失效，改用這篇）。
-- [javascript.info — Variable scope, closure](https://javascript.info/closure)：雖然標題是 closure，但開頭完整講解了 Lexical Environment 的組成，是 Execution Context 概念的基礎。
+- [javascript.info — Variable scope, closure](https://javascript.inf    o/closure)：雖然標題是 closure，但開頭完整講解了 Lexical Environment 的組成，是 Execution Context 概念的基礎。
 
 **進階/整合視角**
 - DEV Community：[How JavaScript Really Executes Code](https://dev.to/malloc72p/how-javascript-really-executes-code-execution-context-and-scope-chain-explained-4c9f) — 把 Execution Context、Scope Chain、`outerEnvironmentReference` 串起來講，<cite index="4-1">解釋了每次函式呼叫都會建立新的執行環境並推入呼叫堆疊，執行完再彈出</cite>，並強調外層環境參照指向函式「宣告時」的位置而非「呼叫時」的位置——這點正好對應你今天筆記裡容易搞混 scope 跟 EC 的地方。
