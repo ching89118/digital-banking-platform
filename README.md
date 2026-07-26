@@ -1,19 +1,19 @@
 # AI-Powered Digital Banking Platform
 
-> 🚧 專案開發中 — Month 1 / Week 1 / Day 1（JS/React 基礎 + 專案初始化階段）
+> 🚧 專案開發中 — Month 1 / Week 2 / Day 7（JS/React 基礎 + 專案初始化階段）
 
 一個模擬真實銀行系統的全端專案，涵蓋交易查詢、身份驗證、即時通知，以及基於 RAG 的 AI 金融助手。這不是一份練習作業，而是依照 [六個月執行手冊](./ROADMAP.md) 逐日建構的完整工程作品，每個功能都對應真實的架構決策與效能數據。
 
 [![Status](https://img.shields.io/badge/status-in%20development-yellow)]()
-[![Progress](https://img.shields.io/badge/progress-Day%201%20%2F%20120-blue)]()
+[![Progress](https://img.shields.io/badge/progress-Day%206%20%2F%20120-blue)]()
 [![License](https://img.shields.io/badge/license-MIT-lightgrey)]()
 
 ## 專案狀態
 
-| 項目 | 狀態 |
-|---|---|
-| 目前階段 | Month 1 — JavaScript/React 基礎 + 專案初始化 |
-| 完成任務 | 1 / 240 |
+| 項目         | 狀態                                 |
+| ------------ | ------------------------------------ |
+| 目前階段     | Month 1 / Week 2 — Async 與工程能力  |
+| 完成任務     | 12 / 240                             |
 | 下一個里程碑 | Banking UI Prototype（Month 1 結束） |
 
 ## 這個專案要解決什麼
@@ -27,14 +27,14 @@
 
 ## 技術棧
 
-| 分類 | 技術 |
-|---|---|
-| Frontend | React + TypeScript + Next.js（後期導入） |
-| Backend | Kotlin + Spring Boot |
-| Database | MySQL（Flyway migration） |
-| Cache | Redis（Month 4 後期） |
-| Infra | Docker Compose + Nginx + GitHub Actions |
-| AI | RAG（Embedding + Vector Search）+ AI Chat Assistant |
+| 分類     | 技術                                                |
+| -------- | --------------------------------------------------- |
+| Frontend | React + TypeScript + Next.js（後期導入）            |
+| Backend  | Kotlin + Spring Boot                                |
+| Database | MySQL（Flyway migration）                           |
+| Cache    | Redis（Month 4 後期）                               |
+| Infra    | Docker Compose + Nginx + GitHub Actions             |
+| AI       | RAG（Embedding + Vector Search）+ AI Chat Assistant |
 
 ## 專案結構
 
@@ -54,18 +54,18 @@ digital-banking-platform/
 
 完整的六個月、240 個任務規劃見 [`ROADMAP.md`](./ROADMAP.md)：
 
-| 月份 | 主題 | 最終成果 |
-|---|---|---|
-| Month 1 | JS/React 基礎 + 專案初始化 | Banking UI Prototype |
-| Month 2 | Digital Banking Core Platform | Transaction Dashboard v1 |
-| Month 3 | 大資料交易系統 + Frontend Performance | 百萬交易查詢優化報告 |
-| Month 4 | Security + Realtime + Enterprise Architecture | 銀行等級安全與即時通知 |
-| Month 5 | AI Banking Assistant | RAG 金融分析助手 |
-| Month 6 | Production 化 + 作品集整理 | Senior Frontend Portfolio |
+| 月份    | 主題                                          | 最終成果                  |
+| ------- | --------------------------------------------- | ------------------------- |
+| Month 1 | JS/React 基礎 + 專案初始化                    | Banking UI Prototype      |
+| Month 2 | Digital Banking Core Platform                 | Transaction Dashboard v1  |
+| Month 3 | 大資料交易系統 + Frontend Performance         | 百萬交易查詢優化報告      |
+| Month 4 | Security + Realtime + Enterprise Architecture | 銀行等級安全與即時通知    |
+| Month 5 | AI Banking Assistant                          | RAG 金融分析助手          |
+| Month 6 | Production 化 + 作品集整理                    | Senior Frontend Portfolio |
 
 ## 快速開始
 
-> ⚠️ 專案仍在 Day 1，尚無可執行程式碼。以下為 Month 1 完成後預計的啟動方式，會隨進度更新。
+> ⚠️ 專案仍在 Day 7，尚無可執行程式碼（React 專案要到 Week 3 Day 11 才會建立）。以下為 Month 1 完成後預計的啟動方式，會隨進度更新。
 
 ```bash
 # Frontend（Month 1 起可用）

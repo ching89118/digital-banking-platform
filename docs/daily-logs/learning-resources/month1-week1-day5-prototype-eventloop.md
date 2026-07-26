@@ -17,6 +17,35 @@
 
 - HackerNoon — [Understanding Prototype Chain And Inheritance in JavaScript](https://hackernoon.com/understanding-prototype-chain-and-inheritance-in-javascript-5c2w31oa)：<cite index="27-1">JavaScript 的繼承機制只有一種構造——物件；每個物件都有一個私有屬性連結到另一個叫做 prototype 的物件，這個 prototype 物件自己也有 prototype，一路串下去直到抵達某個 prototype 為 null 的物件</cite>，這條鏈跟 Scope Chain（查變數用）是兩回事，但都是「找不到就往外/往上查」的機制，這正是你今天筆記裡的釐清重點。
 
+### 具體驗證案例：`this` 綁定不受 Prototype Chain 查找路徑影響
+
+[MDN — this](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/this) 裡有一個很好的範例，直接證明「函式存放在哪個物件」跟「`this` 綁定給誰」是兩件完全獨立的事：
+
+```js
+const obj1 = {
+  name: "obj1",
+  getThis() {
+    return this;
+  },
+};
+
+const obj3 = {
+  __proto__: obj1, // 透過 prototype chain 借用 obj1 的 getThis
+  name: "obj3",
+};
+
+console.log(obj3.getThis()); // { name: 'obj3' }
+```
+
+拆解成兩個獨立步驟：
+
+1. **屬性查找（Prototype Chain 負責）**：`obj3` 自己沒有 `getThis`，沿著 `[[Prototype]]` 往上找到 `obj1` 才找到這個方法。這一步跟 `this` 完全無關，純粹是「程式碼放在哪裡」。
+2. **`this` 綁定（呼叫方式負責）**：找到函式後，因為是用 `obj3.getThis()` 這種「隱式綁定」語法呼叫（Day 4 筆記的四種綁定規則之一），`this` 綁定的是 `.` 前面的呼叫者 `obj3`，不是函式實際存放的 `obj1`。
+
+如果誤以為「`this` 取決於函式定義在哪個物件」，會預期輸出是 `{ name: 'obj1' }`；但實際輸出是 `{ name: 'obj3' }`，證明 Prototype Chain 只負責「去哪裡找到這個方法」，`this` 綁定規則只負責「這次呼叫要把 `this` 設成誰」，兩者互不干涉，只是外觀上都是「鏈狀查找」而容易被誤以為有關聯。
+
+**一句話記憶法**：說明書（函式邏輯）可以借用別人放在工具箱裡的，但說明書裡提到的「你」永遠是指「正在拿著說明書操作的那個人」，不會變成說明書原本放置的工具箱。
+
 ## 4. Event Loop / Microtask vs Macrotask（官方權威資料）
 
 - [MDN — In depth: Microtasks and the JavaScript runtime environment](https://developer.mozilla.org/en-US/docs/Web/API/HTML_DOM_API/Microtask_guide/In_depth)：**今天最重要的一篇**。<cite index="32-1">每個 agent 由一個 event loop 驅動，每次迭代最多執行一個待處理的 task，接著執行所有待處理的 microtask，然後才進行必要的渲染繪製，再進入下一輪迴圈</cite>。關鍵的一段：<cite index="32-1">每當一個 task 結束、且執行堆疊清空時，microtask queue 裡的所有 microtask 會依序被執行；不同之處在於 microtask 的執行會持續到 queue 真的清空為止——即使過程中又有新的 microtask 被排入，換句話說，microtask 可以把新的 microtask 加入佇列，而這些新加入的也會在下一個 task 開始之前、當前這輪事件迴圈結束之前執行完畢</cite>。這段文字直接證實了你今天實驗第 2 題觀察到的行為：巢狀產生的新 `.then()` 確實會在同一輪被清空，不會延後到下一個 macrotask 之後——你的實測結果跟官方描述完全吻合。
@@ -51,7 +80,73 @@ console.log("end");
 
 跑跑看，觀察 `"macrotask: setTimeout"` 是不是要等所有 `"microtask #N"` 都印完才出現。如果把 `count < 5` 改成沒有上限的遞迴，就會實際重現「畫面卡住不渲染」的情境（不建議真的跑沒有終止條件的版本，會讓分頁卡死）。
 
-## 7. Week 1 收尾：自我檢查（面試題自測）
+## 7. Prototype 效能考量與 constructor 副作用（進階補充）
+
+> 這節是後續追問累積出來的補充，把「為什麼方法要掛在 prototype 上」跟「整個覆蓋 prototype 的副作用」兩件事放在一起講清楚。
+
+### 為什麼方法應該掛在 prototype，而不是寫在建構函式裡
+
+- [MDN — Closures：Performance considerations](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Closures#performance_considerations)：官方明確建議，建立新物件/類別時，方法通常應該掛在物件的 prototype 上，而不是寫在建構函式內部——因為建構函式每被呼叫一次，內部定義的方法就會被重新建立一次（也就是每次物件建立都要重新賦值一次）。
+
+**核心原因**：
+
+```js
+// ❌ 不建議：每個實例各自複製一份 getName 函式，浪費記憶體
+function MyObject(name) {
+  this.name = name;
+  this.getName = function () {
+    return this.name;
+  };
+}
+
+// ✅ 建議：所有實例共用同一份 getName，只存在一份
+function MyObject(name) {
+  this.name = name;
+}
+MyObject.prototype.getName = function () {
+  return this.name;
+};
+```
+
+這裡的關鍵判斷標準是：**這個函式有沒有真的用到 closure 的優勢**（也就是有沒有需要保留跨呼叫的私有狀態）。如果沒有——像 `getName` 只是單純讀取 `this.name`——那把它定義在建構函式內部就是純粹浪費，沒有換到任何 closure 帶來的好處，只是白白多佔記憶體。
+
+### 整個覆蓋 `prototype` 的副作用：弄丟 `constructor`
+
+如果採用 `MyObject.prototype = { ... }` 這種整個覆蓋的寫法（而不是逐一用 `MyObject.prototype.xxx = ...` 添加），會連帶把預設的 `constructor` 屬性也蓋掉：
+
+```js
+function MyObject(name) {
+  this.name = name;
+}
+console.log(MyObject.prototype.constructor === MyObject); // true（覆蓋前）
+
+MyObject.prototype = {
+  getName() {
+    return this.name;
+  },
+};
+
+const obj = new MyObject("Alice");
+console.log(obj.constructor === MyObject); // false！
+console.log(obj.constructor === Object);   // true，沿著 Prototype Chain 找到 Object.prototype.constructor 了
+```
+
+大多數實務情境不會依賴 `.constructor` 做判斷，所以這個副作用通常不影響你；但如果專案裡有用到（例如某些函式庫用 `instance.constructor` 做型別判斷或複製新實例），記得手動補回：
+
+```js
+MyObject.prototype = {
+  constructor: MyObject, // 手動補回
+  getName() {
+    return this.name;
+  },
+};
+```
+
+### 一句話總結
+
+MDN 建議把方法搬到 prototype 上，解決的是**效能問題**（別讓建構函式重複建立一模一樣的函式）；`constructor` 被覆蓋掉是**副作用**，屬於不同層面的考量，兩者不衝突，可以同時成立——採用 MDN 建議的寫法沒有錯，只是如果剛好在意 `constructor`，多補一行即可。
+
+## 8. Week 1 收尾：自我檢查（面試題自測）
 
 用這幾題檢查這週七大主題有沒有真的串起來，答不出來的回頭補進 `JavaScript Runtime Notes.md`：
 
